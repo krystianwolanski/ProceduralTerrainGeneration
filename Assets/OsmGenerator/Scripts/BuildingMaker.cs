@@ -22,8 +22,6 @@ namespace Assets.OsmGenerator.Scripts
             {
                 GameObject go = new GameObject();
                 go.transform.position += new Vector3(0, 1.5f, 0);
-                //Vector3 localOrigin = GetCentre(way);
-                //go.transform.position = localOrigin - map.Bounds.Centre;
 
                 MeshFilter mf = go.AddComponent<MeshFilter>();
                 MeshRenderer mr = go.AddComponent<MeshRenderer>();
