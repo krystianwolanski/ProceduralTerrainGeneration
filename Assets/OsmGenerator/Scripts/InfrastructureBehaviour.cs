@@ -1,4 +1,5 @@
 ﻿using Assets.OsmGenerator.Scripts.Serialization;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.OsmGenerator.Scripts
@@ -23,6 +24,21 @@ namespace Assets.OsmGenerator.Scripts
             }
 
             return total / way.NodeIDs.Count;
+        }
+
+        protected IEnumerable<Vector3> PointFeeder(Vector3 p1, Vector3 p2, float maxSpacing)
+        {
+            float distance = Vector3.Distance(p1, p2);
+            int steps = (int)(distance / maxSpacing);
+
+            for (int i = 0; i < steps; i++)
+            {
+                float fraction = (float)i / steps;
+
+                Vector3 position = Vector3.Lerp(p1, p2, fraction);
+
+                yield return position;
+            }
         }
     }
 }

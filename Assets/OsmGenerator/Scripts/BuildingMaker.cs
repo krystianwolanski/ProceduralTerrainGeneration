@@ -21,8 +21,9 @@ namespace Assets.OsmGenerator.Scripts
             foreach (var way in map.Ways.FindAll(w => w.IsBuilding && w.NodeIDs.Count > 1))
             {
                 GameObject go = new GameObject();
-                Vector3 localOrigin = GetCentre(way);
-                go.transform.position = localOrigin - map.Bounds.Centre;
+                go.transform.position += new Vector3(0, 1.5f, 0);
+                //Vector3 localOrigin = GetCentre(way);
+                //go.transform.position = localOrigin - map.Bounds.Centre;
 
                 MeshFilter mf = go.AddComponent<MeshFilter>();
                 MeshRenderer mr = go.AddComponent<MeshRenderer>();
@@ -39,8 +40,8 @@ namespace Assets.OsmGenerator.Scripts
                     OsmNode p2 = map.Nodes[way.NodeIDs[i]];
 
 
-                    Vector3 v1 = p1 - localOrigin;
-                    Vector3 v2 = p2 - localOrigin;
+                    Vector3 v1 = p1 - map.Bounds.Centre;
+                    Vector3 v2 = p2 - map.Bounds.Centre;
                     Vector3 v3 = v1 + new Vector3(0, way.Height, 0);
                     Vector3 v4 = v2 + new Vector3(0, way.Height, 0);
 
