@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using Assets.OsmGenerator.Scripts;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+[RequireComponent(typeof(RoadMaker))]
 public class TerrainControllerSimple : MonoBehaviour {
 
     [SerializeField]
@@ -20,13 +22,24 @@ public class TerrainControllerSimple : MonoBehaviour {
     [SerializeField]
     private Transform playerTransform;
 
+    [SerializeField]
+    private bool deactiveOldTiles = false;
+
     private Vector2 startOffset;
     private Dictionary<Vector2, GameObject> terrainTiles = new Dictionary<Vector2, GameObject>();
     private Vector2[] previousCenterTiles;
     private List<GameObject> previousTileObjects = new List<GameObject>();
 
+    [SerializeField]
+    private GameObject mapRenderPrefab = null;
+
+    private RoadMaker roadMaker;
+
     private void Start() {
         InitialLoad();
+
+        mapRenderPrefab = Instantiate(mapRenderPrefab);
+        roadMaker = mapRenderPrefab.GetComponent<RoadMaker>();
     }
 
     public void InitialLoad() {
@@ -56,12 +69,15 @@ public class TerrainControllerSimple : MonoBehaviour {
                     for (int j = -radius; j <= radius; j++)
                         ActivateOrCreateTile((int)tile.x + i, (int)tile.y + j, tileObjects);
             }
-            //deactivate old tiles
-            foreach (GameObject g in previousTileObjects)
-                if (!tileObjects.Contains(g))
-                    g.SetActive(false);
 
-            previousTileObjects = new List<GameObject>(tileObjects);
+            if(deactiveOldTiles)
+            {
+                foreach (GameObject g in previousTileObjects)
+                    if (!tileObjects.Contains(g))
+                        g.SetActive(false);
+
+                previousTileObjects = new List<GameObject>(tileObjects);
+            }
         }
 
         previousCenterTiles = centerTiles.ToArray();
@@ -72,7 +88,10 @@ public class TerrainControllerSimple : MonoBehaviour {
     private void ActivateOrCreateTile(int xIndex, int yIndex, List<GameObject> tileObjects) {
         if (!terrainTiles.ContainsKey(new Vector2(xIndex, yIndex))) {
             tileObjects.Add(CreateTile(xIndex, yIndex));
-        } else {
+            roadMaker.UpdateRoads();
+
+        }
+        else {
             GameObject t = terrainTiles[new Vector2(xIndex, yIndex)];
             tileObjects.Add(t);
             if (!t.activeSelf)
