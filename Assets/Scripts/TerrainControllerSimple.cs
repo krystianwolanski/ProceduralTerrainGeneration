@@ -1,4 +1,5 @@
 ﻿using Assets.OsmGenerator.Scripts;
+using Assets.Scripts.Models;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,97 +28,104 @@ public class TerrainControllerSimple : MonoBehaviour {
 
     private Vector2 startOffset;
     private Dictionary<Vector2, GameObject> terrainTiles = new Dictionary<Vector2, GameObject>();
-    private Vector2[] previousCenterTiles;
+    
+    private int terrainTreeIndex = 0;
+
+    private Vector2 previousCenterTiles;
     private List<GameObject> previousTileObjects = new List<GameObject>();
 
     [SerializeField]
     private GameObject mapRenderPrefab = null;
 
     private RoadMaker roadMaker;
+    private ForestMaker forestMaker;
+    private BarrierMaker barrierMaker;
+    private FloraGenerator floraGenerator;
+    private BuildingMaker buildingMaker;
 
     private void Start() {
         InitialLoad();
 
         mapRenderPrefab = Instantiate(mapRenderPrefab);
         roadMaker = mapRenderPrefab.GetComponent<RoadMaker>();
+        forestMaker = mapRenderPrefab.GetComponent<ForestMaker>();
+        barrierMaker = mapRenderPrefab.GetComponent<BarrierMaker>();
+        floraGenerator = mapRenderPrefab.GetComponent<FloraGenerator>();
+        buildingMaker = mapRenderPrefab.GetComponent<BuildingMaker>();
     }
 
     public void InitialLoad() {
         DestroyTerrain();
 
-        //choose a place on perlin noise (which loops after 256)
         startOffset = new Vector2(Random.Range(0f, 256f), Random.Range(0f, 256f));
     }
 
     private void Update() {
-        //save the tile the player is on
         Vector2 playerTile = TileFromPosition(playerTransform.position);
-        //save the tiles of all tracked objects in gameTransforms (including the player)
         List<Vector2> centerTiles = new List<Vector2>();
         centerTiles.Add(playerTile);
-        foreach (Transform t in gameTransforms)
-            centerTiles.Add(TileFromPosition(t.position));
 
-        //if no tiles exist yet or tiles should change
-        if (previousCenterTiles == null || HaveTilesChanged(centerTiles)) {
-            List<GameObject> tileObjects = new List<GameObject>();
-            //activate new tiles
-            foreach (Vector2 tile in centerTiles) {
-                bool isPlayerTile = tile == playerTile;
-                int radius = isPlayerTile ? radiusToRender : 1;
-                for (int i = -radius; i <= radius; i++)
-                    for (int j = -radius; j <= radius; j++)
-                        ActivateOrCreateTile((int)tile.x + i, (int)tile.y + j, tileObjects);
-            }
+        if (previousCenterTiles == null || !previousCenterTiles.Equals(playerTile)) 
+        {    
+            int radius = radiusToRender;
+            for (int i = -radius; i <= radius; i++)
+                for (int j = -radius; j <= radius; j++)
+                    if (!terrainTiles.ContainsKey(new Vector2(playerTile.x + i, (int)playerTile.y + j)))
+                        CreateTile((int)playerTile.x + i, (int)playerTile.y + j);
 
-            if(deactiveOldTiles)
+                roadMaker.UpdateRoads();
+                buildingMaker.RenderBuildings();
+
+                for (;terrainTreeIndex < terrainTiles.Count; terrainTreeIndex++)
+                {
+                    floraGenerator.GenerateFlora(terrainTiles.ElementAt(terrainTreeIndex).Value);
+                }
+
+
+            if (deactiveOldTiles)
             {
-                foreach (GameObject g in previousTileObjects)
-                    if (!tileObjects.Contains(g))
-                        g.SetActive(false);
-
-                previousTileObjects = new List<GameObject>(tileObjects);
+           
             }
         }
 
-        previousCenterTiles = centerTiles.ToArray();
+        previousCenterTiles = new Vector2(playerTile.x, playerTile.y);
     }
 
     //Helper methods below
 
-    private void ActivateOrCreateTile(int xIndex, int yIndex, List<GameObject> tileObjects) {
-        if (!terrainTiles.ContainsKey(new Vector2(xIndex, yIndex))) {
-            tileObjects.Add(CreateTile(xIndex, yIndex));
-            roadMaker.UpdateRoads();
+    private GameTileExtremePoints GetTileExtremePoints(GameObject gameObject)
+    {
+        var generateMeshSimple = gameObject.GetComponent<GenerateMeshSimple>();
+        var downLeftPoint = gameObject.transform.position - new Vector3(generateMeshSimple.TerrainSize.x / 2, 0 , generateMeshSimple.TerrainSize.z / 2);
+        var upRightPoint = gameObject.transform.position + new Vector3(generateMeshSimple.TerrainSize.x / 2, 0, generateMeshSimple.TerrainSize.z / 2);
 
-        }
-        else {
-            GameObject t = terrainTiles[new Vector2(xIndex, yIndex)];
-            tileObjects.Add(t);
-            if (!t.activeSelf)
-                t.SetActive(true);
-        }
+        return new GameTileExtremePoints() { DownLeftPoint = downLeftPoint, UpRightPoint = upRightPoint };
+
     }
 
-    private GameObject CreateTile(int xIndex, int yIndex) {
-        GameObject terrain = Instantiate(
+    private void CreateTile(int xIndex, int yIndex) {
+       
+            GameObject terrain = Instantiate(
             terrainTilePrefab,
             new Vector3(terrainSize.x * xIndex, terrainSize.y, terrainSize.z * yIndex),
             Quaternion.identity
-        );
-        terrain.name = TrimEnd(terrain.name, "(Clone)") + " [" + xIndex + " , " + yIndex + "]";
+            );
 
-        terrainTiles.Add(new Vector2(xIndex, yIndex), terrain);
+            terrain.name = TrimEnd(terrain.name, "(Clone)") + " [" + xIndex + " , " + yIndex + "]";
+            terrain.layer = LayerMask.NameToLayer("Ground");
 
-        GenerateMeshSimple gm = terrain.GetComponent<GenerateMeshSimple>();
-        gm.TerrainSize = terrainSize;
-        gm.Gradient = gradient;
-        gm.NoiseScale = noiseScale;
-        gm.CellSize = cellSize;
-        gm.NoiseOffset = NoiseOffset(xIndex, yIndex);
-        gm.Generate();
+            terrainTiles.Add(new Vector2(xIndex, yIndex), terrain);
 
-        return terrain;
+            GenerateMeshSimple gm = terrain.GetComponent<GenerateMeshSimple>();
+            gm.TerrainSize = terrainSize;
+            gm.Gradient = gradient;
+            gm.NoiseScale = noiseScale;
+            gm.CellSize = cellSize;
+            gm.NoiseOffset = NoiseOffset(xIndex, yIndex);
+            gm.Generate();
+
+            var extremePoints = GetTileExtremePoints(terrain);
+            forestMaker.GenerateForest(extremePoints);
     }
 
     private Vector2 NoiseOffset(int xIndex, int yIndex) {
@@ -125,7 +133,7 @@ public class TerrainControllerSimple : MonoBehaviour {
             (xIndex * noiseScale + startOffset.x) % 256,
             (yIndex * noiseScale + startOffset.y) % 256
         );
-        //account for negatives (ex. -1 % 256 = -1). needs to loop around to 255
+
         if (noiseOffset.x < 0)
             noiseOffset = new Vector2(noiseOffset.x + 256, noiseOffset.y);
         if (noiseOffset.y < 0)
@@ -135,15 +143,6 @@ public class TerrainControllerSimple : MonoBehaviour {
 
     private Vector2 TileFromPosition(Vector3 position) {
         return new Vector2(Mathf.FloorToInt(position.x / terrainSize.x + .5f), Mathf.FloorToInt(position.z / terrainSize.z + .5f));
-    }
-
-    private bool HaveTilesChanged(List<Vector2> centerTiles) {
-        if (previousCenterTiles.Length != centerTiles.Count)
-            return true;
-        for (int i = 0; i < previousCenterTiles.Length; i++)
-            if (previousCenterTiles[i] != centerTiles[i])
-                return true;
-        return false;
     }
 
     public void DestroyTerrain() {

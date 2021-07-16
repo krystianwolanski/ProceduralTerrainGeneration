@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 6073236735152988050}
   - component: {fileID: 6073236735152988140}
   - component: {fileID: 6073236735152988141}
+  - component: {fileID: 568205710378574150}
+  - component: {fileID: 7930479450533228981}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -27,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6073236735152988049}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 53.3, y: 0, z: -430}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -58,7 +60,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fb9a343932c2794c94d973c977a0042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  building: {fileID: 2100000, guid: bdc14c7c82e03114696235c40fabdd40, type: 2}
+  glass: {fileID: 2100000, guid: ed55387425a5aeb40b89476b24f73fc7, type: 2}
+  brick: {fileID: 2100000, guid: 9431cc6a6e608324198211bc2e1f1686, type: 2}
+  concrete: {fileID: 2100000, guid: f3e31f4ea1a3e42479051630d12be980, type: 2}
+  defaultMaterials:
+  - {fileID: 2100000, guid: 9431cc6a6e608324198211bc2e1f1686, type: 2}
+  - {fileID: 2100000, guid: 4fa73c63d2717464ea0e6c1cd3a5d878, type: 2}
+  roof: {fileID: 2100000, guid: 0401f1f3f31c9074bb55d7237edcce85, type: 2}
+  window: {fileID: 2100000, guid: 50e5c5dee27c2cd4fbdb31e1be87b92f, type: 2}
+  xFraction: 0.31
+  yFraction: 0.264
+  changeToRenderWindow: 28
 --- !u!114 &6073236735152988141
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,5 +83,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d2d796054be6844886ddb5b00b36e5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ExtraSpanWiseHeightSamples: 3
+  ExtraSpanWiseHeightSamples: 12
+  track: {fileID: 2100000, guid: f124f7f3c465c0749a483aff0fa2998f, type: 2}
   roadMaterial: {fileID: 2100000, guid: bcf7b7def88fa254c9b34c0e69bd566a, type: 2}
+  streetLamp: {fileID: 1271538652431596, guid: 8a3566550e9c0ba46b78e7bcdcb9d056, type: 3}
+--- !u!114 &568205710378574150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6073236735152988049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 510ea2593b6f8fd45af0969c842c3d33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  treeModels:
+  - {fileID: 1970681966781816, guid: 6c9e41e24d2bc6b488c927f43944457b, type: 3}
+  - {fileID: 1970681966781816, guid: 84bb771a8038d2648bd2421451c4018d, type: 3}
+  - {fileID: 1970681966781816, guid: 7d39a68237432ea41ae92c75eb21dcf4, type: 3}
+  - {fileID: 1970681966781816, guid: a7984f59c227d0240b9771d2797a085c, type: 3}
+--- !u!114 &7930479450533228981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6073236735152988049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ad4ab2b6fe253b4fb89bcf12d08ba26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bushModels:
+  - {fileID: 114418, guid: 9b8fc966f95ea9c4194dc091fc40b478, type: 3}
+  - {fileID: 114418, guid: 9b8fc966f95ea9c4194dc091fc40b478, type: 3}
+  - {fileID: 114418, guid: 9b8fc966f95ea9c4194dc091fc40b478, type: 3}
+  - {fileID: 114418, guid: 9b8fc966f95ea9c4194dc091fc40b478, type: 3}
+  percentChance: 5

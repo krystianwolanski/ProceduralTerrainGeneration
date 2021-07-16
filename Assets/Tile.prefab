@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7331880117431914507}
   - component: {fileID: 7331880117431914504}
   - component: {fileID: 7331880117431914505}
-  - component: {fileID: 7331880117431914510}
   - component: {fileID: 7331880117431914506}
   - component: {fileID: 7322630342999135936}
   m_Layer: 0
@@ -61,7 +60,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ce4c8325704904d48b431dd32a1d72c5, type: 2}
+  - {fileID: 2100000, guid: ffa9f731b331c2e40a2d09ecab6118c2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -82,21 +81,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &7331880117431914510
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7331880117431914511}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95c784bba07dddc43a0411cecf28aa3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  xSize: 250
-  zSize: 250
-  seed: 1
 --- !u!64 &7331880117431914506
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -40,5 +40,16 @@ namespace Assets.OsmGenerator.Scripts
                 yield return position;
             }
         }
+
+        protected Vector3 PointInFeeder(Vector3 p1, Vector3 p2, float maxSpacing, int i)
+        {
+            float distance = Vector3.Distance(p1, p2);
+            int steps = (int)(distance / maxSpacing);
+            float fraction = (float)i / steps;
+            Vector3 position = Vector3.Lerp(p1, p2, fraction);
+
+            return position;
+            
+        }
     }
 }

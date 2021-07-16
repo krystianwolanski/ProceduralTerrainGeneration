@@ -24,7 +24,6 @@ namespace Assets.OsmGenerator.Scripts.Serialization
             float y = (float)((MercatorProjection.latToY(MaxLat) + MercatorProjection.latToY(MinLat)) / 2);
 
             Centre = new Vector3(x,0,y);
-
         }
     }
 }

@@ -41,7 +41,7 @@ public class MapReader : MonoBehaviour
     {
         foreach (OsmWay osmWay in Ways)
         {
-            if (osmWay.Visible)
+            if (osmWay.Visible && osmWay.IsNatural == true)
             {
                 Color c = Color.cyan; // for buildings
                 if (!osmWay.IsBoundary)
@@ -55,7 +55,7 @@ public class MapReader : MonoBehaviour
                     Vector3 v1 = p1 - Bounds.Centre;
                     Vector3 v2 = p2 - Bounds.Centre;
 
-                    Debug.DrawLine(v1,v2,c);
+                    Debug.DrawLine(v1, v2, c);
                 }
             }
         }
